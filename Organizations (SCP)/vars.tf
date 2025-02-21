@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "policy_name" {
   description = "Nombre de la política de la organización"
   type        = string
-  default     = "PruebaSCP-ByTerra-Charly"
+  default     = "Prueba-SCP-ByTerra-Charly"
 }
 
 variable "policy_description" {
