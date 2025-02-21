@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'S3/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'S3'
+      - 'S3_wTfstate/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'S3'
 jobs:
   terraform:
     name: Deploy Terraform Job
