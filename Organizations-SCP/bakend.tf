@@ -5,6 +5,6 @@ terraform{
     key="cloudsecurity/405941243308/terraform.tfstate"
     region="us-east-1"
     #dynamodb_table="charly-terraform-locks"
-    #use_lockfile=true
+    use_lockfile=true
     }
 }
