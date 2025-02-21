@@ -23,8 +23,8 @@ jobs:
       
       - name: Initialize Terraform
         run: terraform init
-        working-directory: ./S3  # Asegúrate de que apunte al directorio correcto
+        working-directory: ./S3_wTfstate  # Asegúrate de que apunte al directorio correcto
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve  # Esto destruirá todos los recursos
-        working-directory: ./S3  # Asegúrate de que apunte al directorio correcto
+        working-directory: ./S3_wTfstate  # Asegúrate de que apunte al directorio correcto
