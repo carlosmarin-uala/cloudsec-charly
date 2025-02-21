@@ -1,14 +1,15 @@
-name: Deploy Terraform SCP
+name: Destroy Terraform SCP
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'Organizations (SCP)/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'Organizations (SCP)'
+  workflow_dispatch:  # Esto permite ejecutar el workflow manualmente desde GitHub Actions UI
+    inputs:
+      confirmation:
+        description: 'Confirmar destrucción de la SCP'
+        required: true
+        default: 'yes'
 
 jobs:
   terraform:
-    name: Deploy Terraform Job
+    name: Destroy Terraform Job
     runs-on: ubuntu-latest
     steps:
       # Paso 1: Checkout el código
@@ -38,12 +39,7 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Paso 5: Ejecutar terraform plan (con las credenciales de despliegue)
-      - name: Terraform Plan
-        run: terraform plan
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
-
-      # Paso 6: Ejecutar terraform apply (con las credenciales de despliegue)
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      # Paso 5: Ejecutar terraform destroy (con las credenciales de despliegue)
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
         working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre

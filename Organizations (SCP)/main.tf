@@ -1,10 +1,5 @@
 provider "aws" {
   region = var.aws_region
-  profile = "billing"
-  #############################
-  # IMPORTANTE - IMPORTANTE - IMPORTANTE #
-  # ANTES DE DEPLOYAR VALIDAR QUE SE ESTE USANDO EL PROFILE CORRECTO
-  # Y QUE LAS CREDENCIALES ESTEN ACTUALIZADAS EN AWS CLI
 }
 
 resource "aws_organizations_policy" "denegar_creacion_usuarios_iam" {
