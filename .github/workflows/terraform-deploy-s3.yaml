@@ -1,4 +1,4 @@
-name: Deploy Terraform
+name: Deploy Terraform S3
 on:
   push:
     branches:
