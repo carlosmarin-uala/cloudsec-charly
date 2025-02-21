@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'Organizations (SCP)/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'Organizations (SCP)'
+      - 'Organizations-SCP/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'Organizations (SCP)'
 
 jobs:
   terraform:
@@ -27,7 +27,7 @@ jobs:
       # Paso 3: Inicializar Terraform (con las credenciales del backend)
       - name: Initialize Terraform
         run: terraform init
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
+        working-directory: ./Organizations-SCP  # Se ajusta el directorio con espacios en el nombre
 
       # Paso 4: Configurar las credenciales para la cuenta de despliegue
       - name: Configure AWS credentials for deployment
@@ -41,9 +41,9 @@ jobs:
       # Paso 5: Ejecutar terraform plan (con las credenciales de despliegue)
       - name: Terraform Plan
         run: terraform plan
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
+        working-directory: ./Organizations-SCP  # Se ajusta el directorio con espacios en el nombre
 
       # Paso 6: Ejecutar terraform apply (con las credenciales de despliegue)
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
+        working-directory: ./Organizations-SCP  # Se ajusta el directorio con espacios en el nombre
