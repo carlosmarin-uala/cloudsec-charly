@@ -6,5 +6,5 @@ variable "aws_region" {
 variable "bucket_name" { 
     description = "Nombre del bucket S3" 
     type = string 
-    default = "prueba-crear-s3-charly-by-terra" # Valor predeterminado 
+    default = "prueba-s3-charly-by-terra" # Valor predeterminado 
     } 
