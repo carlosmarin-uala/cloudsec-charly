@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'S3/**'  # Esto asegura que solo se ejecute cuando haya cambios en archivos dentro de la carpeta 's3'
+      - 'S3/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'S3'
 jobs:
   terraform:
     name: Deploy Terraform Job
@@ -21,17 +21,17 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BACKEND }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_BACKEND }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-      
-      # Initialize terraform
+
       - name: Initialize Terraform
         run: terraform init
+        working-directory: ./S3  # Especificamos el directorio donde están los archivos .tf
 
-      # Execute the terraform plan
       - name: Terraform Plan
         run: terraform plan
+        working-directory: ./S3  # Especificamos el directorio donde están los archivos .tf
 
-      # Deploy terraform changes
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        working-directory: ./S3  # Especificamos el directorio donde están los archivos .tf
