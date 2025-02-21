@@ -1,0 +1,37 @@
+name: Deploy Terraform S3 W. TFState
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'S3/**'  # Solo se ejecuta cuando hay cambios en la carpeta 'S3'
+jobs:
+  terraform:
+    name: Deploy Terraform Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BACKEND }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_BACKEND }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./S3_wTfstate  # Especificamos el directorio donde están los archivos .tf
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./S3_wTfstate  # Especificamos el directorio donde están los archivos .tf
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./S3_wTfstate  # Especificamos el directorio donde están los archivos .tf
