@@ -16,25 +16,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3 
+        uses: hashicorp/setup-terraform@v3
 
-      # Paso 2: Configurar las credenciales para el backend (la cuenta donde está el estado de Terraform)
-      # Este paso usa las credenciales del backend para poder acceder a S3 y realizar el 'terraform init' y 'terraform plan'
-      - name: Configure AWS credentials for backend
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BACKEND }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_BACKEND }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Paso 3: Inicializar Terraform (con las credenciales del backend)
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: ./Organizations-SCP
-
-      # Paso 4: Configurar las credenciales para la cuenta de despliegue (solo para crear recursos)
-      # Este paso cambia las credenciales para poder ejecutar 'terraform apply' en la cuenta de despliegue
+      # Paso 2: Configurar las credenciales para la cuenta de despliegue
+      # Usamos las credenciales de la cuenta DEPLOY para inicializar Terraform
       - name: Configure AWS credentials for deployment
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -43,14 +28,36 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Paso 5: Ejecutar terraform plan (con las credenciales del backend para acceder al estado, pero también puede usar la cuenta de deploy)
-      # Aquí 'terraform plan' accede al estado del backend con las credenciales del backend
+      # Paso 3: Asumir el rol en la cuenta de BACKEND usando las credenciales de DEPLOY
+      - name: Assume Role for Backend
+        id: assume-role
+        run: |
+          ROLE_ARN="arn:aws:iam::341880317696:role/Role-Backend-Terraform-Charly"
+          CREDS=$(aws sts assume-role --role-arn $ROLE_ARN --role-session-name terraform-session --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text)
+          echo "::set-output name=aws_access_key_id::$(echo $CREDS | cut -f1)"
+          echo "::set-output name=aws_secret_access_key::$(echo $CREDS | cut -f2)"
+          echo "::set-output name=aws_session_token::$(echo $CREDS | cut -f3)"
+
+      # Paso 4: Configurar las credenciales de la cuenta de backend (con el rol asumido)
+      - name: Configure AWS credentials for backend (assumed role)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ steps.assume-role.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ steps.assume-role.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ steps.assume-role.outputs.aws_session_token }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Paso 5: Inicializar Terraform (con el rol asumido)
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./Organizations-SCP
+
+      # Paso 6: Ejecutar terraform plan (con el rol asumido para acceder al backend)
       - name: Terraform Plan
         run: terraform plan
         working-directory: ./Organizations-SCP
 
-      # Paso 6: Ejecutar terraform apply (con las credenciales de despliegue para poder crear los recursos)
-      # Aquí 'terraform apply' se ejecuta con las credenciales del deploy, que tienen permisos para gestionar los recursos
+      # Paso 7: Ejecutar terraform apply (con el rol asumido para crear recursos)
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./Organizations-SCP
