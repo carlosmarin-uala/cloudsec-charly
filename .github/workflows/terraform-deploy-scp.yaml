@@ -61,3 +61,4 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./Organizations-SCP
+        
