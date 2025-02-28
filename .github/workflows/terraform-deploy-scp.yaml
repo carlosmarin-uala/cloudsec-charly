@@ -60,8 +60,17 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         working-directory: ./Organizations-SCP
+      
+      # Paso 7: Restaurar las credenciales originales de DEPLOY
+      - name: Restore DEPLOY credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
+          aws-region: ${{ secrets.AWS_REGION 
 
-      # Paso 7: Ejecutar terraform apply (con el rol asumido para crear recursos)
+      # Paso 8: Ejecutar terraform apply (con el rol asumido para crear recursos)
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./Organizations-SCP
