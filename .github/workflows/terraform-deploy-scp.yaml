@@ -33,10 +33,14 @@ jobs:
         id: assume-role
         run: |
           ROLE_ARN="arn:aws:iam::341880317696:role/Role-Backend-Terraform-Charly"
-          CREDS=$(aws sts assume-role --role-arn $ROLE_ARN --role-session-name terraform-session --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text)
-          echo "aws_access_key_id=$(echo $CREDS | cut -f1)" >> $GITHUB_ENV
-          echo "aws_secret_access_key=$(echo $CREDS | cut -f2)" >> $GITHUB_ENV
-          echo "aws_session_token=$(echo $CREDS | cut -f3)" >> $GITHUB_ENV
+          CREDS=$(aws sts assume-role --role-arn $ROLE_ARN --role-session-name terraform-session --query "Credentials" --output json)
+          export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.AccessKeyId')
+          export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
+          export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.SessionToken')
+
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
+          echo "aws_session_token=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
 
       # Paso 4: Configurar las credenciales de la cuenta de backend (con el rol asumido)
       - name: Configure AWS credentials for backend (assumed role)
