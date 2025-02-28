@@ -28,49 +28,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Paso 3: Asumir el rol en la cuenta de BACKEND usando las credenciales de DEPLOY
-      - name: Assume Role for Backend
-        id: assume-role
-        run: |
-          ROLE_ARN="arn:aws:iam::341880317696:role/Role-Backend-Terraform-Charly"
-          CREDS=$(aws sts assume-role --role-arn $ROLE_ARN --role-session-name terraform-session --query "Credentials" --output json)
-          export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.AccessKeyId')
-          export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
-          export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.SessionToken')
-
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
-          echo "aws_session_token=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
-
-      # Paso 4: Configurar las credenciales de la cuenta de backend (con el rol asumido)
-      - name: Configure AWS credentials for backend (assumed role)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ env.aws_access_key_id }}
-          aws-secret-access-key: ${{ env.aws_secret_access_key }}
-          aws-session-token: ${{ env.aws_session_token }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Paso 5: Inicializar Terraform (con el rol asumido)
+      # Paso 3: Inicializar Terraform (con el rol asumido)
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./Organizations-SCP
 
-      # Paso 6: Ejecutar terraform plan (con el rol asumido para acceder al backend)
+      # Paso 4: Ejecutar terraform plan (con el rol asumido para acceder al backend)
       - name: Terraform Plan
         run: terraform plan
         working-directory: ./Organizations-SCP
-      
-      # Paso 7: Restaurar las credenciales originales de DEPLOY
-      - name: Restore DEPLOY credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
-      # Paso 8: Ejecutar terraform apply (con el rol asumido para crear recursos)
+      # Paso 5: Ejecutar terraform apply (con el rol asumido para crear recursos)
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./Organizations-SCP
