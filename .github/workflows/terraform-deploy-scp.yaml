@@ -68,7 +68,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
-          aws-region: ${{ secrets.AWS_REGION 
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # Paso 8: Ejecutar terraform apply (con el rol asumido para crear recursos)
       - name: Terraform Apply

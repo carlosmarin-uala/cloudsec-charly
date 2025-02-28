@@ -27,3 +27,4 @@ variable "iam_action" {
   type        = string
   default     = "iam:CreateUser"
 }
+
