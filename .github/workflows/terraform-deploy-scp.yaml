@@ -116,3 +116,6 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./Organizations-SCP
+
+
+        
