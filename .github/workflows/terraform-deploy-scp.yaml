@@ -63,7 +63,7 @@ jobs:
       
       # Paso 7: Asumir el rol en la cuenta BILLING usando las credenciales de DEPLOY
       - name: Assume Role for Deploy
-        id: assume-role
+        id: assume-role2
         run: |
           ROLE_ARN="arn:aws:iam::405941243308:role/iam_r_uala_arg_billing_prod_github_actions"
           CREDS=$(aws sts assume-role --role-arn $ROLE_ARN --role-session-name terraform-session --query "Credentials" --output json)
