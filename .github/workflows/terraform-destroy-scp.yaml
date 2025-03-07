@@ -1,45 +1,30 @@
-name: Destroy Terraform SCP
+name: Destroy Terraform Resources From AWS Organizations (SCPs)
 on:
-  workflow_dispatch:  # Esto permite ejecutar el workflow manualmente desde GitHub Actions UI
-    inputs:
-      confirmation:
-        description: 'Confirmar destrucción de la SCP'
-        required: true
-        default: 'yes'
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente desde la interfaz de GitHub Actions
 
 jobs:
   terraform:
-    name: Destroy Terraform Job
+    name: Destroy Terraform Resources
     runs-on: ubuntu-latest
     steps:
-      # Paso 1: Checkout el código
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
 
-      # Paso 2: Configurar las credenciales para el backend (la cuenta donde está el estado de Terraform)
-      - name: Configure AWS credentials for backend
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BACKEND }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_BACKEND }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Paso 3: Inicializar Terraform (con las credenciales del backend)
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
-
-      # Paso 4: Configurar las credenciales para la cuenta de despliegue
-      - name: Configure AWS credentials for deployment
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_DEPLOY }}
           aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./Organizations-SCP  # Asegúrate de que apunte al directorio correcto
 
-      # Paso 5: Ejecutar terraform destroy (con las credenciales de despliegue)
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve
-        working-directory: ./Organizations\ \(SCP\)  # Se ajusta el directorio con espacios en el nombre
+        run: terraform destroy -auto-approve  # Esto destruirá todos los recursos
+        working-directory: ./Organizations-SCP  # Asegúrate de que apunte al directorio correcto
