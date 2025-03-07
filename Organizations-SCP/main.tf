@@ -27,4 +27,3 @@ resource "aws_organizations_policy" "denegar_creacion_usuarios_iam" {
     }
   )
 }
-

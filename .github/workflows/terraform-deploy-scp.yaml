@@ -55,13 +55,8 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./Organizations-SCP
-
-      # Paso 6: Ejecutar terraform plan (con el rol asumido de Security-Dev para acceder al backend)
-      - name: Terraform Plan
-        run: terraform plan
-        working-directory: ./Organizations-SCP
       
-      # Paso 7: Asumir el rol en la cuenta BILLING usando las credenciales de DEPLOY
+      # Paso 6: Asumir el rol en la cuenta BILLING usando las credenciales de DEPLOY
       - name: Assume Role for Deploy
         id: assume-role2
         run: |
@@ -74,6 +69,11 @@ jobs:
           echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
           echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
           echo "aws_session_token=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
+
+      # Paso 7: Ejecutar terraform plan (con el rol asumido de Security-Dev para acceder al backend)
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./Organizations-SCP
 
       # Paso 8: Configurar las credenciales de la cuenta BILLING (con el rol asumido)
       - name: Configure AWS credentials for backend (assumed role)
